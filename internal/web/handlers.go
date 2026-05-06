@@ -97,7 +97,11 @@ func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	quota, err := scheduler.ParseQuota(r.FormValue("quota"), r.FormValue("quota_unit"))
+	quotaStr := r.FormValue("quota")
+	if quotaStr == "" {
+		quotaStr = "10"
+	}
+	quota, err := scheduler.ParseQuota(quotaStr, r.FormValue("quota_unit"))
 	if err != nil {
 		writeJSONError(w, http.StatusBadRequest, "Invalid quota: "+err.Error())
 		return
@@ -148,7 +152,11 @@ func UpdateAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	quota, err := scheduler.ParseQuota(r.FormValue("quota"), r.FormValue("quota_unit"))
+	quotaStr := r.FormValue("quota")
+	if quotaStr == "" {
+		quotaStr = "10"
+	}
+	quota, err := scheduler.ParseQuota(quotaStr, r.FormValue("quota_unit"))
 	if err != nil {
 		writeJSONError(w, http.StatusBadRequest, "Invalid quota: "+err.Error())
 		return
