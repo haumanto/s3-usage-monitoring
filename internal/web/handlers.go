@@ -92,11 +92,6 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		writeJSONError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
 	quotaStr := r.FormValue("quota")
 	if quotaStr == "" {
 		quotaStr = "10"
@@ -138,11 +133,6 @@ func UpdateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.URL.Path[len("/api/accounts/"):], 10, 64)
 	if err != nil {
 		writeJSONError(w, http.StatusBadRequest, "Invalid ID")
-		return
-	}
-
-	if err := r.ParseForm(); err != nil {
-		writeJSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -235,11 +225,6 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		if err := r.ParseForm(); err != nil {
-			writeJSONError(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
 		if interval := r.FormValue("check_interval"); interval != "" {
 			if _, err := time.ParseDuration(interval); err != nil {
 				writeJSONError(w, http.StatusBadRequest, "Invalid interval")

@@ -90,7 +90,10 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(form);
+            const formData = new FormData();
+            formData.append('check_interval', document.getElementById('check_interval').value);
+            formData.append('telegram_bot_token', document.getElementById('telegram_bot_token').value);
+            formData.append('telegram_chat_id', document.getElementById('telegram_chat_id').value);
             try {
                 const res = await fetch('/api/settings', { method: 'POST', body: formData });
                 const data = await parseResponse(res);

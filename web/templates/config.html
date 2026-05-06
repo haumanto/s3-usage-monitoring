@@ -141,9 +141,28 @@
             }
         }
 
+        function buildFormData() {
+            const fd = new FormData();
+            fd.append('name', document.getElementById('name').value);
+            fd.append('access_key', document.getElementById('access_key').value);
+            fd.append('secret_key', document.getElementById('secret_key').value);
+            fd.append('region', document.getElementById('region').value);
+            fd.append('endpoint', document.getElementById('endpoint').value);
+            fd.append('bucket', document.getElementById('bucket').value);
+            fd.append('quota', document.getElementById('quota').value);
+            fd.append('quota_unit', document.getElementById('quota_unit').value);
+            fd.append('threshold', document.getElementById('threshold').value);
+            if (document.getElementById('telegram_enabled').checked) {
+                fd.append('telegram_enabled', 'on');
+            }
+            fd.append('telegram_bot_token', document.getElementById('telegram_bot_token').value);
+            fd.append('telegram_chat_id', document.getElementById('telegram_chat_id').value);
+            return fd;
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(form);
+            const formData = buildFormData();
             const accountId = document.getElementById('accountId').value;
             
             let url = '/api/accounts';
