@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -13,6 +14,19 @@ import (
 )
 
 var tmpl *template.Template
+var loc *time.Location
+
+func init() {
+	tz := os.Getenv("TZ")
+	if tz == "" {
+		tz = "Asia/Jakarta"
+	}
+	var err error
+	loc, err = time.LoadLocation(tz)
+	if err != nil {
+		loc = time.UTC
+	}
+}
 
 func InitTemplates(templateDir string) error {
 	var err error
@@ -39,7 +53,7 @@ func toAccountView(a db.S3Account) AccountView {
 	v.UsageGB = float64(a.CurrentUsageBytes) / (1024 * 1024 * 1024)
 	v.QuotaGB = float64(a.QuotaBytes) / (1024 * 1024 * 1024)
 	if a.LastCheckAt != nil {
-		v.FormattedLast = a.LastCheckAt.Format("2006-01-02 15:04")
+		v.FormattedLast = a.LastCheckAt.In(loc).Format("2006-01-02 15:04")
 	}
 	return v
 }

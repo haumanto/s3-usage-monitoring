@@ -9,6 +9,7 @@ services:
       - DB_PATH=/app/data/s3monitor.db
       - TEMPLATE_DIR=/app/web/templates
       - STATIC_DIR=/app/web/static
+      - TZ=Asia/Jakarta
     volumes:
       - ./data:/app/data
     restart: unless-stopped
