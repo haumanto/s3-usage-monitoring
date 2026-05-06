@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 Usage Monitor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 S3 Usage Monitor</h1>
+            <nav>
+                <a href="/" class="active">Dashboard</a>
+                <a href="/config">Accounts</a>
+                <a href="/settings">Settings</a>
+            </nav>
+        </header>
+
+        <main>
+            {{if .Accounts}}
+            <div class="accounts-grid">
+                {{range .Accounts}}
+                <div class="account-card status-{{.LastCheckStatus}}">
+                    <div class="account-header">
+                        <h3>{{.Name}}</h3>
+                        <span class="status-badge">{{.LastCheckStatus}}</span>
+                    </div>
+                    
+                    <div class="usage-info">
+                        <div class="usage-bar-container">
+                            <div class="usage-bar" style="width: {{.PercentUsed}}%"></div>
+                        </div>
+                        <div class="usage-details">
+                            <span class="usage-text">
+                                {{if gt .QuotaBytes 0}}
+                                {{printf "%.2f" .UsageGB}} GB / {{printf "%.2f" .QuotaGB}} GB
+                                {{else}}
+                                No quota set
+                                {{end}}
+                            </span>
+                            {{if gt .QuotaBytes 0}}
+                            <span class="percent-text">{{.PercentUsed}}% used</span>
+                            {{end}}
+                        </div>
+                    </div>
+
+                    {{if .LastCheckError}}
+                    <div class="error-message">{{.LastCheckError}}</div>
+                    {{end}}
+
+                    <div class="account-meta">
+                        <span>Last check: {{if .FormattedLast}}{{.FormattedLast}}{{else}}Never{{end}}</span>
+                        <button onclick="triggerCheck({{.ID}})" class="btn-small">Refresh</button>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+            {{else}}
+            <div class="empty-state">
+                <p>No accounts configured yet.</p>
+                <a href="/config" class="btn">Add Account</a>
+            </div>
+            {{end}}
+        </main>
+    </div>
+
+    <script>
+        function triggerCheck(id) {
+            fetch('/api/trigger/' + id, { method: 'POST' })
+                .then(() => location.reload())
+                .catch(err => alert('Failed to trigger check: ' + err));
+        }
+        
+        // Auto-refresh every 30 seconds
+        setTimeout(() => location.reload(), 30000);
+    </script>
+</body>
+</html>

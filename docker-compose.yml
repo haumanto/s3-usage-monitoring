@@ -1,0 +1,20 @@
+services:
+  s3-monitor:
+    build: .
+    container_name: s3-usage-monitor
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_PATH=/app/data/s3monitor.db
+      - TEMPLATE_DIR=/app/web/templates
+      - STATIC_DIR=/app/web/static
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

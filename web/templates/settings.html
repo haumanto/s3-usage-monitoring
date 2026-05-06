@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - S3 Usage Monitor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 S3 Usage Monitor</h1>
+            <nav>
+                <a href="/">Dashboard</a>
+                <a href="/config">Accounts</a>
+                <a href="/settings" class="active">Settings</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="form-section">
+                <h2>Global Settings</h2>
+                <form id="settingsForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="check_interval">Check Interval</label>
+                            <select id="check_interval" name="check_interval">
+                                <option value="1m">1 minute</option>
+                                <option value="5m">5 minutes</option>
+                                <option value="15m">15 minutes</option>
+                                <option value="30m">30 minutes</option>
+                                <option value="1h">1 hour</option>
+                            </select>
+                            <small>How often to poll S3 usage for all accounts.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="telegram_bot_token">Global Telegram Bot Token</label>
+                            <input type="text" id="telegram_bot_token" name="telegram_bot_token" value="{{.TelegramBotToken}}" placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11">
+                            <small>Optional global token. Account-level tokens override this.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="telegram_chat_id">Global Telegram Chat ID</label>
+                            <input type="text" id="telegram_chat_id" name="telegram_chat_id" value="{{.TelegramChatID}}" placeholder="-1001234567890">
+                            <small>Optional global chat ID. Account-level chat IDs override this.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Save Settings</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="info-section">
+                <h2>About</h2>
+                <p>S3 Usage Monitor polls your configured S3 accounts and tracks storage usage against quotas.</p>
+                <ul>
+                    <li>Account checks run automatically based on the configured interval.</li>
+                    <li>You can also trigger a manual check from the Dashboard.</li>
+                    <li>Telegram notifications are sent per-account when the usage threshold is crossed.</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const form = document.getElementById('settingsForm');
+        const intervalSelect = document.getElementById('check_interval');
+
+        // Pre-select current interval
+        const currentInterval = '{{.CheckInterval}}';
+        if (currentInterval) {
+            intervalSelect.value = currentInterval;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            try {
+                const res = await fetch('/api/settings', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Settings saved successfully');
+                } else {
+                    alert('Error: ' + JSON.stringify(data));
+                }
+            } catch (err) {
+                alert('Request failed: ' + err);
+            }
+        });
+    </script>
+</body>
+</html>
