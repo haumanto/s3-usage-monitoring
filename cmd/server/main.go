@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	_ "time/tzdata"
 
 	"github.com/haumanto/s3-usage-monitoring/internal/db"
 	"github.com/haumanto/s3-usage-monitoring/internal/scheduler"
