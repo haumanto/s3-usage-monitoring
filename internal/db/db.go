@@ -13,24 +13,24 @@ import (
 var DB *sql.DB
 
 type S3Account struct {
-	ID                int64
-	Name              string
-	AccessKey         string
-	SecretKey         string
-	Region            string
-	Endpoint          string
-	Bucket            string
-	QuotaBytes        int64
-	ThresholdPercent  int
-	TelegramEnabled   bool
-	TelegramBotToken  string
-	TelegramChatID    string
-	CurrentUsageBytes int64
-	LastCheckAt       *time.Time
-	LastCheckStatus   string
-	LastCheckError    string
-	CreatedAt         time.Time
-	UpdatedAt         time.Time
+	ID                int64      `json:"id"`
+	Name              string     `json:"name"`
+	AccessKey         string     `json:"access_key"`
+	SecretKey         string     `json:"secret_key"`
+	Region            string     `json:"region"`
+	Endpoint          string     `json:"endpoint"`
+	Bucket            string     `json:"bucket"`
+	QuotaBytes        int64      `json:"quota_bytes"`
+	ThresholdPercent  int        `json:"threshold_percent"`
+	TelegramEnabled   bool       `json:"telegram_enabled"`
+	TelegramBotToken  string     `json:"telegram_bot_token"`
+	TelegramChatID    string     `json:"telegram_chat_id"`
+	CurrentUsageBytes int64      `json:"current_usage_bytes"`
+	LastCheckAt       *time.Time `json:"last_check_at"`
+	LastCheckStatus   string     `json:"last_check_status"`
+	LastCheckError    string     `json:"last_check_error"`
+	CreatedAt         time.Time  `json:"created_at"`
+	UpdatedAt         time.Time  `json:"updated_at"`
 }
 
 func Init() error {
