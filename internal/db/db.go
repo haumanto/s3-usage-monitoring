@@ -111,10 +111,11 @@ func GetAllAccounts() ([]S3Account, error) {
 	for rows.Next() {
 		var a S3Account
 		var lastCheckAt sql.NullTime
+		var lastCheckError sql.NullString
 		err := rows.Scan(
 			&a.ID, &a.Name, &a.AccessKey, &a.SecretKey, &a.Region, &a.Endpoint, &a.Bucket,
 			&a.QuotaBytes, &a.ThresholdPercent, &a.TelegramEnabled, &a.TelegramBotToken, &a.TelegramChatID,
-			&a.CurrentUsageBytes, &lastCheckAt, &a.LastCheckStatus, &a.LastCheckError,
+			&a.CurrentUsageBytes, &lastCheckAt, &a.LastCheckStatus, &lastCheckError,
 			&a.CreatedAt, &a.UpdatedAt,
 		)
 		if err != nil {
@@ -122,6 +123,9 @@ func GetAllAccounts() ([]S3Account, error) {
 		}
 		if lastCheckAt.Valid {
 			a.LastCheckAt = &lastCheckAt.Time
+		}
+		if lastCheckError.Valid {
+			a.LastCheckError = lastCheckError.String
 		}
 		accounts = append(accounts, a)
 	}
@@ -131,6 +135,7 @@ func GetAllAccounts() ([]S3Account, error) {
 func GetAccount(id int64) (*S3Account, error) {
 	var a S3Account
 	var lastCheckAt sql.NullTime
+	var lastCheckError sql.NullString
 	err := DB.QueryRow(`
 		SELECT id, name, access_key, secret_key, region, endpoint, bucket,
 			quota_bytes, threshold_percent, telegram_enabled, telegram_bot_token, telegram_chat_id,
@@ -140,7 +145,7 @@ func GetAccount(id int64) (*S3Account, error) {
 	`, id).Scan(
 		&a.ID, &a.Name, &a.AccessKey, &a.SecretKey, &a.Region, &a.Endpoint, &a.Bucket,
 		&a.QuotaBytes, &a.ThresholdPercent, &a.TelegramEnabled, &a.TelegramBotToken, &a.TelegramChatID,
-		&a.CurrentUsageBytes, &lastCheckAt, &a.LastCheckStatus, &a.LastCheckError,
+		&a.CurrentUsageBytes, &lastCheckAt, &a.LastCheckStatus, &lastCheckError,
 		&a.CreatedAt, &a.UpdatedAt,
 	)
 	if err == sql.ErrNoRows {
@@ -148,6 +153,9 @@ func GetAccount(id int64) (*S3Account, error) {
 	}
 	if lastCheckAt.Valid {
 		a.LastCheckAt = &lastCheckAt.Time
+	}
+	if lastCheckError.Valid {
+		a.LastCheckError = lastCheckError.String
 	}
 	return &a, err
 }
