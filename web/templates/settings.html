@@ -79,16 +79,25 @@
             intervalSelect.value = currentInterval;
         }
 
+        async function parseResponse(res) {
+            const text = await res.text();
+            try {
+                return JSON.parse(text);
+            } catch {
+                return { success: false, error: text || ('HTTP ' + res.status + ' ' + res.statusText) };
+            }
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
             try {
                 const res = await fetch('/api/settings', { method: 'POST', body: formData });
-                const data = await res.json();
+                const data = await parseResponse(res);
                 if (data.success) {
                     alert('Settings saved successfully');
                 } else {
-                    alert('Error: ' + JSON.stringify(data));
+                    alert('Error: ' + (data.error || JSON.stringify(data)));
                 }
             } catch (err) {
                 alert('Request failed: ' + err);

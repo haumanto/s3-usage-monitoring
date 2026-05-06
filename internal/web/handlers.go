@@ -70,10 +70,20 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func writeJSON(w http.ResponseWriter, status int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(data)
+}
+
+func writeJSONError(w http.ResponseWriter, status int, message string) {
+	writeJSON(w, status, map[string]interface{}{"success": false, "error": message})
+}
+
 func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 	accounts, err := db.GetAllAccounts()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -82,19 +92,14 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	if err := r.ParseForm(); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	quota, err := scheduler.ParseQuota(r.FormValue("quota"), r.FormValue("quota_unit"))
 	if err != nil {
-		http.Error(w, "Invalid quota: "+err.Error(), http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "Invalid quota: "+err.Error())
 		return
 	}
 
@@ -118,40 +123,34 @@ func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := db.CreateAccount(account); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "account": account})
+	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "account": account})
 }
 
 func UpdateAccountHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	id, err := strconv.ParseInt(r.URL.Path[len("/api/accounts/"):], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "Invalid ID")
 		return
 	}
 
 	if err := r.ParseForm(); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	account, err := db.GetAccount(id)
 	if err != nil || account == nil {
-		http.Error(w, "Account not found", http.StatusNotFound)
+		writeJSONError(w, http.StatusNotFound, "Account not found")
 		return
 	}
 
 	quota, err := scheduler.ParseQuota(r.FormValue("quota"), r.FormValue("quota_unit"))
 	if err != nil {
-		http.Error(w, "Invalid quota: "+err.Error(), http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "Invalid quota: "+err.Error())
 		return
 	}
 
@@ -173,45 +172,38 @@ func UpdateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	account.TelegramChatID = r.FormValue("telegram_chat_id")
 
 	if err := db.UpdateAccount(account); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "account": account})
+	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "account": account})
 }
 
 func DeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	id, err := strconv.ParseInt(r.URL.Path[len("/api/accounts/"):], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "Invalid ID")
 		return
 	}
 
 	if err := db.DeleteAccount(id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
+	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
 }
 
 func GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.URL.Path[len("/api/accounts/"):], 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "Invalid ID")
 		return
 	}
 
 	account, err := db.GetAccount(id)
 	if err != nil || account == nil {
-		http.Error(w, "Account not found", http.StatusNotFound)
+		writeJSONError(w, http.StatusNotFound, "Account not found")
 		return
 	}
 
@@ -236,13 +228,13 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		if err := r.ParseForm(); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			writeJSONError(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		if interval := r.FormValue("check_interval"); interval != "" {
 			if _, err := time.ParseDuration(interval); err != nil {
-				http.Error(w, "Invalid interval", http.StatusBadRequest)
+				writeJSONError(w, http.StatusBadRequest, "Invalid interval")
 				return
 			}
 			_ = db.SetSetting("check_interval", interval)
@@ -251,12 +243,11 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		_ = db.SetSetting("telegram_bot_token", r.FormValue("telegram_bot_token"))
 		_ = db.SetSetting("telegram_chat_id", r.FormValue("telegram_chat_id"))
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
+		writeJSON(w, http.StatusOK, map[string]interface{}{"success": true})
 		return
 	}
 
-	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	writeJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
 }
 
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
@@ -302,21 +293,16 @@ func SettingsPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func TriggerCheckHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	idStr := r.URL.Path[len("/api/trigger/"):]
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		writeJSONError(w, http.StatusBadRequest, "Invalid ID")
 		return
 	}
 
 	account, err := db.GetAccount(id)
 	if err != nil || account == nil {
-		http.Error(w, "Account not found", http.StatusNotFound)
+		writeJSONError(w, http.StatusNotFound, "Account not found")
 		return
 	}
 
@@ -327,6 +313,5 @@ func TriggerCheckHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Check triggered"})
+	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "message": "Check triggered"})
 }

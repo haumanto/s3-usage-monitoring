@@ -66,10 +66,27 @@
     </div>
 
     <script>
-        function triggerCheck(id) {
-            fetch('/api/trigger/' + id, { method: 'POST' })
-                .then(() => location.reload())
-                .catch(err => alert('Failed to trigger check: ' + err));
+        async function parseResponse(res) {
+            const text = await res.text();
+            try {
+                return JSON.parse(text);
+            } catch {
+                return { success: false, error: text || ('HTTP ' + res.status + ' ' + res.statusText) };
+            }
+        }
+
+        async function triggerCheck(id) {
+            try {
+                const res = await fetch('/api/trigger/' + id, { method: 'POST' });
+                const data = await parseResponse(res);
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to trigger check: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Failed to trigger check: ' + err);
+            }
         }
         
         // Auto-refresh every 30 seconds

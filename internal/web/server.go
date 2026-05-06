@@ -28,7 +28,7 @@ func NewServer(staticDir string) *http.ServeMux {
 	mux.HandleFunc("/api/accounts/", func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/api/accounts/")
 		if strings.Contains(path, "/") {
-			http.Error(w, "Not found", http.StatusNotFound)
+			writeJSONError(w, http.StatusNotFound, "Not found")
 			return
 		}
 
@@ -40,7 +40,7 @@ func NewServer(staticDir string) *http.ServeMux {
 		case http.MethodDelete:
 			DeleteAccountHandler(w, r)
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			writeJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		}
 	})
 

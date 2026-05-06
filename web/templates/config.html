@@ -132,6 +132,15 @@
             telegramFields.style.display = telegramCheckbox.checked ? 'flex' : 'none';
         });
 
+        async function parseResponse(res) {
+            const text = await res.text();
+            try {
+                return JSON.parse(text);
+            } catch {
+                return { success: false, error: text || ('HTTP ' + res.status + ' ' + res.statusText) };
+            }
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
@@ -147,12 +156,12 @@
 
             try {
                 const res = await fetch(url, { method, body: formData });
-                const data = await res.json();
+                const data = await parseResponse(res);
                 if (data.success) {
                     resetForm();
                     loadAccounts();
                 } else {
-                    alert('Error: ' + JSON.stringify(data));
+                    alert('Error: ' + (data.error || JSON.stringify(data)));
                 }
             } catch (err) {
                 alert('Request failed: ' + err);
@@ -162,6 +171,10 @@
         async function loadAccounts() {
             try {
                 const res = await fetch('/api/accounts');
+                if (!res.ok) {
+                    console.error('Failed to load accounts:', res.status, res.statusText);
+                    return;
+                }
                 const accounts = await res.json();
                 const tbody = document.querySelector('#accountsTable tbody');
                 tbody.innerHTML = accounts.map(a => `
@@ -186,6 +199,10 @@
         async function editAccount(id) {
             try {
                 const res = await fetch('/api/accounts/' + id);
+                if (!res.ok) {
+                    alert('Failed to load account: HTTP ' + res.status);
+                    return;
+                }
                 const a = await res.json();
                 
                 document.getElementById('accountId').value = a.id;
@@ -213,8 +230,13 @@
         async function deleteAccount(id) {
             if (!confirm('Delete this account?')) return;
             try {
-                await fetch('/api/accounts/' + id, { method: 'DELETE' });
-                loadAccounts();
+                const res = await fetch('/api/accounts/' + id, { method: 'DELETE' });
+                const data = await parseResponse(res);
+                if (data.success) {
+                    loadAccounts();
+                } else {
+                    alert('Failed to delete: ' + (data.error || 'Unknown error'));
+                }
             } catch (err) {
                 alert('Failed to delete: ' + err);
             }
