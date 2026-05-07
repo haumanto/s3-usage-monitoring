@@ -23,7 +23,7 @@
                 {{range .Accounts}}
                 <div class="account-card status-{{.LastCheckStatus}}">
                     <div class="account-header">
-                        <h3>{{.Name}}</h3>
+                        <h3>{{.Name}} {{if .TelegramEnabled}}<span class="notify-icon" title="Telegram notifications enabled">🔔</span>{{else}}<span class="notify-icon off" title="Telegram notifications disabled">🔕</span>{{end}}</h3>
                         <span class="status-badge">{{.LastCheckStatus}}</span>
                     </div>
                     
