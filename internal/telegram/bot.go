@@ -51,6 +51,30 @@ func (b *Bot) SendNotification(accountName string, usageBytes, quotaBytes int64,
 	return b.sendMessage(message)
 }
 
+func (b *Bot) SendRecoveryNotification(accountName string, usageBytes, quotaBytes int64) error {
+	if !b.IsConfigured() {
+		return fmt.Errorf("telegram bot not configured")
+	}
+
+	usageGB := float64(usageBytes) / (1024 * 1024 * 1024)
+	quotaGB := float64(quotaBytes) / (1024 * 1024 * 1024)
+	percentUsed := 0.0
+	if quotaBytes > 0 {
+		percentUsed = float64(usageBytes) / float64(quotaBytes) * 100
+	}
+
+	message := fmt.Sprintf(
+		"✅ *S3 Usage Recovered*\n\n"+
+			"*Account:* %s\n"+
+			"*Usage:* %.2f GB / %.2f GB\n"+
+			"*Percent Used:* %.1f%%\n\n"+
+			"Usage is now back within normal limits.",
+		accountName, usageGB, quotaGB, percentUsed,
+	)
+
+	return b.sendMessage(message)
+}
+
 func (b *Bot) SendErrorNotification(accountName string, errMsg string) error {
 	if !b.IsConfigured() {
 		return fmt.Errorf("telegram bot not configured")

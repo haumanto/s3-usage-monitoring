@@ -45,7 +45,7 @@ func Init() error {
 	}
 
 	var err error
-	DB, err = sql.Open("sqlite", dbPath+"?_journal_mode=WAL&_busy_timeout=5000")
+	DB, err = sql.Open("sqlite", dbPath+"?_journal_mode=WAL&_busy_timeout=30000")
 	if err != nil {
 		return fmt.Errorf("open db: %w", err)
 	}
@@ -54,6 +54,9 @@ func Init() error {
 		return fmt.Errorf("migrate: %w", err)
 	}
 
+	DB.SetMaxOpenConns(1)
+	DB.SetMaxIdleConns(1)
+	DB.SetConnMaxLifetime(0)
 	return nil
 }
 

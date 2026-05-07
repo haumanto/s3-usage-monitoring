@@ -106,6 +106,16 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
+	if err := r.ParseForm(); err != nil {
+		writeJSONError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	quotaStr := r.FormValue("quota")
 	if quotaStr == "" {
 		quotaStr = "10"
@@ -144,6 +154,16 @@ func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateAccountHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
+	if err := r.ParseForm(); err != nil {
+		writeJSONError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	id, err := strconv.ParseInt(r.URL.Path[len("/api/accounts/"):], 10, 64)
 	if err != nil {
 		writeJSONError(w, http.StatusBadRequest, "Invalid ID")
@@ -192,6 +212,11 @@ func UpdateAccountHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		writeJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
 	id, err := strconv.ParseInt(r.URL.Path[len("/api/accounts/"):], 10, 64)
 	if err != nil {
 		writeJSONError(w, http.StatusBadRequest, "Invalid ID")
@@ -300,6 +325,11 @@ func SettingsPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func TriggerCheckHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
 	idStr := r.URL.Path[len("/api/trigger/"):]
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
@@ -313,12 +343,9 @@ func TriggerCheckHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Run check in background
-	go func() {
-		if err := scheduler.CheckAccount(account); err != nil {
-			fmt.Printf("Manual check failed for %s: %v\n", account.Name, err)
-		}
-	}()
+	if err := scheduler.CheckAccount(account); err != nil {
+		fmt.Printf("Manual check failed for %s: %v\n", account.Name, err)
+	}
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{"success": true, "message": "Check triggered"})
 }
