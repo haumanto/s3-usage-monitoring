@@ -111,11 +111,6 @@ func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		writeJSONError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
 	quotaStr := r.FormValue("quota")
 	if quotaStr == "" {
 		quotaStr = "10"
@@ -156,11 +151,6 @@ func CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
-	if err := r.ParseForm(); err != nil {
-		writeJSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
