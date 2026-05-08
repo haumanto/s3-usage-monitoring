@@ -4,66 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings — S3 Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: '#111111',
+                        'surface-hover': '#1a1a1a',
+                        'bg-elevated': '#0a0a0a',
+                        border: '#222222',
+                        'border-hover': '#333333',
+                        accent: '#5e6ad2',
+                        'accent-hover': '#6b76e3',
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="brand">S3 Monitor</div>
-            <nav>
-                <a href="/">Dashboard</a>
-                <a href="/config">Accounts</a>
-                <a href="/settings" class="active">Settings</a>
+<body class="min-h-screen bg-black text-white font-sans antialiased selection:bg-accent/30">
+    <div class="max-w-5xl mx-auto px-6 py-8">
+        <header class="flex items-center justify-between h-14 mb-10">
+            <div class="text-base font-semibold tracking-tight">S3 Monitor</div>
+            <nav class="flex items-center gap-1">
+                <a href="/" class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white hover:bg-surface rounded-md transition-colors">Dashboard</a>
+                <a href="/config" class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white hover:bg-surface rounded-md transition-colors">Accounts</a>
+                <a href="/settings" class="px-4 py-2 text-sm font-medium text-white bg-surface rounded-md transition-colors">Settings</a>
             </nav>
         </header>
 
         <main>
-            <section class="form-section">
-                <h2>Global settings</h2>
+            <section class="bg-surface border border-border rounded-lg p-6 mb-6">
+                <h2 class="text-sm font-semibold mb-5">Global settings</h2>
                 <form id="settingsForm">
-                    <div class="form-group">
-                        <label for="check_interval">Check interval</label>
-                        <select id="check_interval" name="check_interval">
+                    <div class="mb-4">
+                        <label for="check_interval" class="block text-xs font-medium text-neutral-500 mb-1.5">Check interval</label>
+                        <select id="check_interval" name="check_interval"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
                             <option value="1m">1 minute</option>
                             <option value="5m">5 minutes</option>
                             <option value="15m">15 minutes</option>
                             <option value="30m">30 minutes</option>
                             <option value="1h">1 hour</option>
                         </select>
-                        <small>How often to check all accounts for usage changes.</small>
+                        <p class="mt-1.5 text-[11px] text-neutral-600 font-medium">How often to check all accounts for usage changes.</p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="telegram_bot_token">Global Telegram bot token</label>
-                        <input type="text" id="telegram_bot_token" name="telegram_bot_token" value="{{.TelegramBotToken}}" placeholder="123456:ABC...">
-                        <small>Optional. Account-level tokens override this.</small>
+                    <div class="mb-4">
+                        <label for="telegram_bot_token" class="block text-xs font-medium text-neutral-500 mb-1.5">Global Telegram bot token</label>
+                        <input type="text" id="telegram_bot_token" name="telegram_bot_token" value="{{.TelegramBotToken}}" placeholder="123456:ABC..."
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
+                        <p class="mt-1.5 text-[11px] text-neutral-600 font-medium">Optional. Account-level tokens override this.</p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="telegram_chat_id">Global Telegram chat ID</label>
-                        <input type="text" id="telegram_chat_id" name="telegram_chat_id" value="{{.TelegramChatID}}" placeholder="-1001234567890">
-                        <small>Optional. Account-level chat IDs override this.</small>
+                    <div class="mb-4">
+                        <label for="telegram_chat_id" class="block text-xs font-medium text-neutral-500 mb-1.5">Global Telegram chat ID</label>
+                        <input type="text" id="telegram_chat_id" name="telegram_chat_id" value="{{.TelegramChatID}}" placeholder="-1001234567890"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
+                        <p class="mt-1.5 text-[11px] text-neutral-600 font-medium">Optional. Account-level chat IDs override this.</p>
                     </div>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn">Save settings</button>
+                    <div class="pt-4 mt-5 border-t border-border">
+                        <button type="submit"
+                            class="inline-flex items-center justify-center px-3.5 py-1.5 text-sm font-medium text-white bg-accent hover:bg-accent-hover rounded-md transition-colors active:scale-[0.98]">Save settings</button>
                     </div>
                 </form>
             </section>
 
-            <section class="info-section">
-                <h2>About</h2>
-                <p>S3 Monitor polls configured S3 accounts and tracks storage usage against quotas.</p>
-                <ul>
-                    <li>Checks run automatically at the configured interval</li>
-                    <li>Telegram notifications are sent when usage crosses the threshold</li>
-                    <li>All data is stored locally in SQLite</li>
+            <section class="bg-surface border border-border rounded-lg p-6">
+                <h2 class="text-sm font-semibold mb-4">About</h2>
+                <p class="text-sm text-neutral-500 leading-relaxed mb-4">S3 Monitor polls configured S3 accounts and tracks storage usage against quotas.</p>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm text-neutral-500">
+                        <span class="w-1 h-1 rounded-full bg-neutral-600 mt-2 flex-shrink-0"></span>
+                        <span>Checks run automatically at the configured interval</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-neutral-500">
+                        <span class="w-1 h-1 rounded-full bg-neutral-600 mt-2 flex-shrink-0"></span>
+                        <span>Telegram notifications are sent when usage crosses the threshold</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-neutral-500">
+                        <span class="w-1 h-1 rounded-full bg-neutral-600 mt-2 flex-shrink-0"></span>
+                        <span>All data is stored locally in SQLite</span>
+                    </li>
                 </ul>
             </section>
         </main>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="fixed bottom-6 right-6 px-5 py-3 bg-surface border border-border rounded-lg text-sm font-medium text-white shadow-xl transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none z-50"></div>
 
     <script>
         const form = document.getElementById('settingsForm');
@@ -72,38 +109,34 @@
 
         function showToast(message) {
             toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
         }
 
         const currentInterval = '{{.CheckInterval}}';
-        if (currentInterval) {
-            intervalSelect.value = currentInterval;
-        }
+        if (currentInterval) intervalSelect.value = currentInterval;
 
         async function parseResponse(res) {
             const text = await res.text();
-            try {
-                return JSON.parse(text);
-            } catch {
-                return { success: false, error: text || ('HTTP ' + res.status + ' ' + res.statusText) };
-            }
+            try { return JSON.parse(text); }
+            catch { return { success: false, error: text || ('HTTP ' + res.status) }; }
         }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData();
-            formData.append('check_interval', document.getElementById('check_interval').value);
+            formData.append('check_interval', intervalSelect.value);
             formData.append('telegram_bot_token', document.getElementById('telegram_bot_token').value);
             formData.append('telegram_chat_id', document.getElementById('telegram_chat_id').value);
             try {
                 const res = await fetch('/api/settings', { method: 'POST', body: formData });
                 const data = await parseResponse(res);
-                if (data.success) {
-                    showToast('Settings saved');
-                } else {
-                    showToast('Error: ' + (data.error || 'Unknown error'));
-                }
+                if (data.success) showToast('Settings saved');
+                else showToast('Error: ' + (data.error || 'Unknown error'));
             } catch (err) {
                 showToast('Request failed: ' + err);
             }

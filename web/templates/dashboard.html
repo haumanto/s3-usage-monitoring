@@ -4,38 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — S3 Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: '#111111',
+                        'surface-hover': '#1a1a1a',
+                        'bg-elevated': '#0a0a0a',
+                        border: '#222222',
+                        'border-hover': '#333333',
+                        accent: '#5e6ad2',
+                        'accent-hover': '#6b76e3',
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="brand">S3 Monitor</div>
-            <nav>
-                <a href="/" class="active">Dashboard</a>
-                <a href="/config">Accounts</a>
-                <a href="/settings">Settings</a>
+<body class="min-h-screen bg-black text-white font-sans antialiased selection:bg-accent/30">
+    <div class="max-w-5xl mx-auto px-6 py-8">
+        <header class="flex items-center justify-between h-14 mb-10">
+            <div class="text-base font-semibold tracking-tight">S3 Monitor</div>
+            <nav class="flex items-center gap-1">
+                <a href="/" class="px-4 py-2 text-sm font-medium text-white bg-surface rounded-md transition-colors">Dashboard</a>
+                <a href="/config" class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white hover:bg-surface rounded-md transition-colors">Accounts</a>
+                <a href="/settings" class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white hover:bg-surface rounded-md transition-colors">Settings</a>
             </nav>
         </header>
 
         <main>
             {{if .Accounts}}
-            <div class="accounts-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {{range .Accounts}}
-                <div class="account-card status-{{.LastCheckStatus}}">
-                    <div class="account-header">
-                        <h3>{{.Name}}</h3>
-                        <div class="status-indicator">
-                            <span class="status-dot {{.LastCheckStatus}}"></span>
-                            <span style="text-transform:capitalize;">{{.LastCheckStatus}}</span>
+                <div class="bg-surface border border-border rounded-lg p-5 transition-all duration-200 hover:border-border-hover hover:-translate-y-0.5 hover:shadow-xl animate-fade-in" >
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="text-sm font-semibold">{{.Name}}</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full
+                                {{if eq .LastCheckStatus "ok"}}bg-green-400{{end}}
+                                {{if eq .LastCheckStatus "warning"}}bg-amber-400{{end}}
+                                {{if eq .LastCheckStatus "error"}}bg-red-400{{end}}"></span>
+                            <span class="text-xs font-medium text-neutral-400 capitalize">{{.LastCheckStatus}}</span>
                         </div>
                     </div>
-                    
-                    <div class="usage-info">
-                        <div class="usage-bar-container">
-                            <div class="usage-bar" style="width: {{.PercentUsed}}%"></div>
+
+                    <div class="mb-4">
+                        <div class="h-1 bg-bg-elevated rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
+                                {{if eq .LastCheckStatus "ok"}}bg-accent{{end}}
+                                {{if eq .LastCheckStatus "warning"}}bg-amber-400{{end}}
+                                {{if eq .LastCheckStatus "error"}}bg-red-400{{end}}"
+                                style="width: {{.PercentUsed}}%; min-width: 2px;"></div>
                         </div>
-                        <div class="usage-details">
-                            <span>
+                        <div class="flex justify-between mt-3">
+                            <span class="text-xs font-medium text-neutral-500">
                                 {{if gt .QuotaBytes 0}}
                                 {{printf "%.2f" .UsageGB}} / {{printf "%.2f" .QuotaGB}} GB
                                 {{else}}
@@ -43,42 +74,34 @@
                                 {{end}}
                             </span>
                             {{if gt .QuotaBytes 0}}
-                            <span>{{.PercentUsed}}%</span>
+                            <span class="text-xs font-medium text-neutral-500">{{.PercentUsed}}%</span>
                             {{end}}
                         </div>
                     </div>
 
                     {{if .LastCheckError}}
-                    <div class="error-message">{{.LastCheckError}}</div>
+                    <div class="border-l-2 border-red-400 bg-red-400/[0.06] text-red-400 text-xs px-4 py-2.5 rounded-r-md mb-4 leading-relaxed">
+                        {{.LastCheckError}}
+                    </div>
                     {{end}}
 
-                    <div class="account-meta">
+                    <div class="flex items-center justify-between text-[11px] font-medium text-neutral-600">
                         <span>{{if .FormattedLast}}Checked {{.FormattedLast}}{{else}}Never checked{{end}}</span>
-                        {{if .TelegramEnabled}}<span style="color:var(--text-tertiary);">Notifications on</span>{{end}}
+                        {{if .TelegramEnabled}}<span>Notifications on</span>{{end}}
                     </div>
                 </div>
                 {{end}}
             </div>
             {{else}}
-            <div class="empty-state">
-                <p>No accounts configured</p>
-                <a href="/config" class="btn">Add account</a>
+            <div class="text-center py-24">
+                <p class="text-sm text-neutral-500 mb-5">No accounts configured</p>
+                <a href="/config" class="inline-flex items-center justify-center px-3.5 py-1.5 text-sm font-medium text-white bg-accent hover:bg-accent-hover rounded-md transition-colors active:scale-[0.98]">Add account</a>
             </div>
             {{end}}
         </main>
     </div>
 
     <script>
-        async function parseResponse(res) {
-            const text = await res.text();
-            try {
-                return JSON.parse(text);
-            } catch {
-                return { success: false, error: text || ('HTTP ' + res.status + ' ' + res.statusText) };
-            }
-        }
-        
-        // Auto-refresh every 30 seconds
         setTimeout(() => location.reload(), 30000);
     </script>
 </body>

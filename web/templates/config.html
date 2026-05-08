@@ -4,119 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accounts — S3 Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: '#111111',
+                        'surface-hover': '#1a1a1a',
+                        'bg-elevated': '#0a0a0a',
+                        border: '#222222',
+                        'border-hover': '#333333',
+                        accent: '#5e6ad2',
+                        'accent-hover': '#6b76e3',
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="brand">S3 Monitor</div>
-            <nav>
-                <a href="/">Dashboard</a>
-                <a href="/config" class="active">Accounts</a>
-                <a href="/settings">Settings</a>
+<body class="min-h-screen bg-black text-white font-sans antialiased selection:bg-accent/30">
+    <div class="max-w-5xl mx-auto px-6 py-8">
+        <header class="flex items-center justify-between h-14 mb-10">
+            <div class="text-base font-semibold tracking-tight">S3 Monitor</div>
+            <nav class="flex items-center gap-1">
+                <a href="/" class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white hover:bg-surface rounded-md transition-colors">Dashboard</a>
+                <a href="/config" class="px-4 py-2 text-sm font-medium text-white bg-surface rounded-md transition-colors">Accounts</a>
+                <a href="/settings" class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white hover:bg-surface rounded-md transition-colors">Settings</a>
             </nav>
         </header>
 
         <main>
-            <section class="form-section">
-                <h2 id="formTitle">Add account</h2>
+            <section class="bg-surface border border-border rounded-lg p-6 mb-6">
+                <h2 id="formTitle" class="text-sm font-semibold mb-5">Add account</h2>
                 <form id="accountForm">
                     <input type="hidden" id="accountId" name="id">
-                    
-                    <div class="form-group">
-                        <label for="name">Account name</label>
-                        <input type="text" id="name" name="name" required placeholder="Production AWS">
+
+                    <div class="mb-4">
+                        <label for="name" class="block text-xs font-medium text-neutral-500 mb-1.5">Account name</label>
+                        <input type="text" id="name" name="name" required placeholder="Production AWS"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
                     </div>
 
-                    <div class="form-group">
-                        <label for="access_key">Access key ID</label>
-                        <input type="text" id="access_key" name="access_key" required placeholder="AKIA...">
+                    <div class="mb-4">
+                        <label for="access_key" class="block text-xs font-medium text-neutral-500 mb-1.5">Access key ID</label>
+                        <input type="text" id="access_key" name="access_key" required placeholder="AKIA..."
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
                     </div>
 
-                    <div class="form-group">
-                        <label for="secret_key">Secret access key</label>
-                        <input type="password" id="secret_key" name="secret_key" required placeholder="••••••••">
+                    <div class="mb-4">
+                        <label for="secret_key" class="block text-xs font-medium text-neutral-500 mb-1.5">Secret access key</label>
+                        <input type="password" id="secret_key" name="secret_key" required placeholder="••••••••"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
                     </div>
 
-                    <div class="form-group">
-                        <label for="region">Region</label>
-                        <input type="text" id="region" name="region" value="us-east-1" placeholder="us-east-1">
+                    <div class="mb-4">
+                        <label for="region" class="block text-xs font-medium text-neutral-500 mb-1.5">Region</label>
+                        <input type="text" id="region" name="region" value="us-east-1" placeholder="us-east-1"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
                     </div>
 
-                    <div class="form-group">
-                        <label for="endpoint">Custom endpoint</label>
-                        <input type="text" id="endpoint" name="endpoint" placeholder="https://minio.example.com">
-                        <small>Optional. For S3-compatible services like MinIO or Wasabi.</small>
+                    <div class="mb-4">
+                        <label for="endpoint" class="block text-xs font-medium text-neutral-500 mb-1.5">Custom endpoint</label>
+                        <input type="text" id="endpoint" name="endpoint" placeholder="https://minio.example.com"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
+                        <p class="mt-1.5 text-[11px] text-neutral-600 font-medium">Optional. For S3-compatible services like MinIO or Wasabi.</p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="bucket">Bucket</label>
-                        <input type="text" id="bucket" name="bucket" placeholder="my-bucket">
-                        <small>Leave empty to monitor all buckets in the account.</small>
+                    <div class="mb-4">
+                        <label for="bucket" class="block text-xs font-medium text-neutral-500 mb-1.5">Bucket</label>
+                        <input type="text" id="bucket" name="bucket" placeholder="my-bucket"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
+                        <p class="mt-1.5 text-[11px] text-neutral-600 font-medium">Leave empty to monitor all buckets in the account.</p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="quota">Quota</label>
-                        <div class="input-with-select">
-                            <input type="number" id="quota" name="quota" step="0.1" value="10" min="0">
-                            <select id="quota_unit" name="quota_unit">
+                    <div class="mb-4">
+                        <label for="quota" class="block text-xs font-medium text-neutral-500 mb-1.5">Quota</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="quota" name="quota" step="0.1" value="10" min="0"
+                                class="flex-1 px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
+                            <select id="quota_unit" name="quota_unit"
+                                class="px-3 py-2 bg-black border border-border rounded-md text-sm text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors min-w-[80px]">
                                 <option value="GB" selected>GB</option>
                                 <option value="TB">TB</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="threshold">Threshold</label>
-                        <input type="number" id="threshold" name="threshold" value="80" min="1" max="100">
-                        <small>Percentage at which to trigger a warning.</small>
+                    <div class="mb-4">
+                        <label for="threshold" class="block text-xs font-medium text-neutral-500 mb-1.5">Threshold</label>
+                        <input type="number" id="threshold" name="threshold" value="80" min="1" max="100"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
+                        <p class="mt-1.5 text-[11px] text-neutral-600 font-medium">Percentage at which to trigger a warning.</p>
                     </div>
 
-                    <div class="form-group checkbox-group">
-                        <label>
-                            <input type="checkbox" id="telegram_enabled" name="telegram_enabled">
-                            Enable Telegram notifications
+                    <div class="mb-4">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="telegram_enabled" name="telegram_enabled"
+                                class="w-4 h-4 accent-accent rounded cursor-pointer">
+                            <span class="text-sm text-white">Enable Telegram notifications</span>
                         </label>
                     </div>
 
-                    <div class="form-group telegram-fields" style="display:none;">
-                        <label for="telegram_bot_token">Bot token</label>
-                        <input type="text" id="telegram_bot_token" name="telegram_bot_token" placeholder="123456:ABC...">
+                    <div class="telegram-fields hidden mb-4">
+                        <label for="telegram_bot_token" class="block text-xs font-medium text-neutral-500 mb-1.5">Bot token</label>
+                        <input type="text" id="telegram_bot_token" name="telegram_bot_token" placeholder="123456:ABC..."
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
                     </div>
 
-                    <div class="form-group telegram-fields" style="display:none;">
-                        <label for="telegram_chat_id">Chat ID</label>
-                        <input type="text" id="telegram_chat_id" name="telegram_chat_id" placeholder="-1001234567890">
+                    <div class="telegram-fields hidden mb-4">
+                        <label for="telegram_chat_id" class="block text-xs font-medium text-neutral-500 mb-1.5">Chat ID</label>
+                        <input type="text" id="telegram_chat_id" name="telegram_chat_id" placeholder="-1001234567890"
+                            class="w-full px-3 py-2 bg-black border border-border rounded-md text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors">
                     </div>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn" id="submitBtn">Add account</button>
-                        <button type="button" class="btn-text" onclick="resetForm()">Cancel</button>
+                    <div class="flex items-center gap-3 pt-4 mt-5 border-t border-border">
+                        <button type="submit" id="submitBtn"
+                            class="inline-flex items-center justify-center px-3.5 py-1.5 text-sm font-medium text-white bg-accent hover:bg-accent-hover rounded-md transition-colors active:scale-[0.98]">Add account</button>
+                        <button type="button" onclick="resetForm()"
+                            class="text-sm font-medium text-neutral-500 hover:text-white transition-colors">Cancel</button>
                     </div>
                 </form>
             </section>
 
-            <section class="accounts-list">
-                <h2>Configured accounts</h2>
-                <table id="accountsTable">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Region</th>
-                            <th>Bucket</th>
-                            <th>Quota</th>
-                            <th>Threshold</th>
-                            <th>Telegram</th>
-                            <th style="text-align:right;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <section class="mt-8">
+                <h2 class="text-sm font-semibold mb-4">Configured accounts</h2>
+                <div class="overflow-x-auto">
+                    <table id="accountsTable" class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left">
+                                <th class="text-xs font-medium text-neutral-500 pb-3">Name</th>
+                                <th class="text-xs font-medium text-neutral-500 pb-3">Region</th>
+                                <th class="text-xs font-medium text-neutral-500 pb-3">Bucket</th>
+                                <th class="text-xs font-medium text-neutral-500 pb-3">Quota</th>
+                                <th class="text-xs font-medium text-neutral-500 pb-3">Threshold</th>
+                                <th class="text-xs font-medium text-neutral-500 pb-3">Telegram</th>
+                                <th class="text-xs font-medium text-neutral-500 pb-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </section>
         </main>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="fixed bottom-6 right-6 px-5 py-3 bg-surface border border-border rounded-lg text-sm font-medium text-white shadow-xl transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none z-50"></div>
 
     <script>
         const form = document.getElementById('accountForm');
@@ -125,24 +165,23 @@
         const toast = document.getElementById('toast');
 
         telegramCheckbox.addEventListener('change', () => {
-            telegramFields.forEach(el => {
-                el.style.display = telegramCheckbox.checked ? 'block' : 'none';
-            });
+            telegramFields.forEach(el => el.classList.toggle('hidden', !telegramCheckbox.checked));
         });
 
         function showToast(message) {
             toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
         }
 
         async function parseResponse(res) {
             const text = await res.text();
-            try {
-                return JSON.parse(text);
-            } catch {
-                return { success: false, error: text || ('HTTP ' + res.status + ' ' + res.statusText) };
-            }
+            try { return JSON.parse(text); }
+            catch { return { success: false, error: text || ('HTTP ' + res.status) }; }
         }
 
         function buildFormData() {
@@ -156,9 +195,7 @@
             fd.append('quota', document.getElementById('quota').value);
             fd.append('quota_unit', document.getElementById('quota_unit').value);
             fd.append('threshold', document.getElementById('threshold').value);
-            if (document.getElementById('telegram_enabled').checked) {
-                fd.append('telegram_enabled', 'on');
-            }
+            if (telegramCheckbox.checked) fd.append('telegram_enabled', 'on');
             fd.append('telegram_bot_token', document.getElementById('telegram_bot_token').value);
             fd.append('telegram_chat_id', document.getElementById('telegram_chat_id').value);
             return fd;
@@ -168,13 +205,9 @@
             e.preventDefault();
             const formData = buildFormData();
             const accountId = document.getElementById('accountId').value;
-            
             let url = '/api/accounts';
             let method = 'POST';
-            
-            if (accountId) {
-                url = '/api/accounts/' + accountId;
-            }
+            if (accountId) url = '/api/accounts/' + accountId;
 
             try {
                 const res = await fetch(url, { method, body: formData });
@@ -194,24 +227,21 @@
         async function loadAccounts() {
             try {
                 const res = await fetch('/api/accounts');
-                if (!res.ok) {
-                    console.error('Failed to load accounts:', res.status, res.statusText);
-                    return;
-                }
+                if (!res.ok) return;
                 const accounts = await res.json();
                 const tbody = document.querySelector('#accountsTable tbody');
                 tbody.innerHTML = accounts.map(a => `
-                    <tr>
-                        <td>${a.name}</td>
-                        <td>${a.region}</td>
-                        <td>${a.bucket || 'All buckets'}</td>
-                        <td>${formatBytes(a.quota_bytes)}</td>
-                        <td>${a.threshold_percent}%</td>
-                        <td>${a.telegram_enabled ? 'On' : 'Off'}</td>
-                        <td>
-                            <div class="actions">
-                                <button onclick="editAccount(${a.id})" class="btn-small">Edit</button>
-                                <button onclick="deleteAccount(${a.id})" class="btn-small btn-danger">Delete</button>
+                    <tr class="hover:bg-bg-elevated/50 transition-colors">
+                        <td class="py-2.5 px-4 border-b border-border">${a.name}</td>
+                        <td class="py-2.5 px-4 border-b border-border">${a.region}</td>
+                        <td class="py-2.5 px-4 border-b border-border">${a.bucket || 'All buckets'}</td>
+                        <td class="py-2.5 px-4 border-b border-border">${formatBytes(a.quota_bytes)}</td>
+                        <td class="py-2.5 px-4 border-b border-border">${a.threshold_percent}%</td>
+                        <td class="py-2.5 px-4 border-b border-border">${a.telegram_enabled ? 'On' : 'Off'}</td>
+                        <td class="py-2.5 px-4 border-b border-border">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="editAccount(${a.id})" class="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-neutral-400 border border-border hover:text-white hover:bg-surface-hover rounded-md transition-colors">Edit</button>
+                                <button onclick="deleteAccount(${a.id})" class="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-red-400 border border-border hover:bg-red-400/10 hover:border-red-400/30 rounded-md transition-colors">Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -224,12 +254,9 @@
         async function editAccount(id) {
             try {
                 const res = await fetch('/api/accounts/' + id);
-                if (!res.ok) {
-                    showToast('Failed to load account');
-                    return;
-                }
+                if (!res.ok) { showToast('Failed to load account'); return; }
                 const a = await res.json();
-                
+
                 document.getElementById('accountId').value = a.id;
                 document.getElementById('name').value = a.name;
                 document.getElementById('access_key').value = a.access_key;
@@ -239,17 +266,13 @@
                 document.getElementById('bucket').value = a.bucket || '';
                 document.getElementById('quota').value = (a.quota_bytes / (1024*1024*1024)).toFixed(2);
                 document.getElementById('threshold').value = a.threshold_percent;
-                document.getElementById('telegram_enabled').checked = a.telegram_enabled;
+                telegramCheckbox.checked = a.telegram_enabled;
                 document.getElementById('telegram_bot_token').value = a.telegram_bot_token || '';
                 document.getElementById('telegram_chat_id').value = a.telegram_chat_id || '';
-                
-                telegramFields.forEach(el => {
-                    el.style.display = a.telegram_enabled ? 'block' : 'none';
-                });
-                
+
+                telegramFields.forEach(el => el.classList.toggle('hidden', !a.telegram_enabled));
                 document.getElementById('formTitle').textContent = 'Edit account';
                 document.getElementById('submitBtn').textContent = 'Save changes';
-                
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
                 showToast('Failed to load account');
@@ -277,9 +300,7 @@
             document.getElementById('accountId').value = '';
             document.getElementById('formTitle').textContent = 'Add account';
             document.getElementById('submitBtn').textContent = 'Add account';
-            telegramFields.forEach(el => {
-                el.style.display = 'none';
-            });
+            telegramFields.forEach(el => el.classList.add('hidden'));
         }
 
         function formatBytes(bytes) {
