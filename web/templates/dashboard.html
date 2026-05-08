@@ -19,21 +19,6 @@
 
         <main>
             {{if .Accounts}}
-            <div class="overview">
-                <div class="stat">
-                    <div class="stat-value">{{len .Accounts}}</div>
-                    <div class="stat-label">Accounts</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">{{printf "%.1f" .TotalUsageGB}}<span style="font-size:13px;color:var(--text-secondary);margin-left:2px;">GB</span></div>
-                    <div class="stat-label">Total usage</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" style="color:{{if gt .WarningCount 0}}var(--warning){{else}}var(--ok){{end}};">{{.WarningCount}}</div>
-                    <div class="stat-label">Alerts</div>
-                </div>
-            </div>
-
             <div class="accounts-grid">
                 {{range .Accounts}}
                 <div class="account-card status-{{.LastCheckStatus}}">
