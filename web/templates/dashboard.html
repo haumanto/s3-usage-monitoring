@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S3 Usage Monitor</title>
+    <title>Dashboard — S3 Monitor</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📊 S3 Usage Monitor</h1>
+            <div class="brand">S3 Monitor</div>
             <nav>
                 <a href="/" class="active">Dashboard</a>
                 <a href="/config">Accounts</a>
@@ -19,12 +19,30 @@
 
         <main>
             {{if .Accounts}}
+            <div class="overview">
+                <div class="stat">
+                    <div class="stat-value">{{len .Accounts}}</div>
+                    <div class="stat-label">Accounts</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">{{printf "%.1f" .TotalUsageGB}}<span style="font-size:13px;color:var(--text-secondary);margin-left:2px;">GB</span></div>
+                    <div class="stat-label">Total usage</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" style="color:{{if gt .WarningCount 0}}var(--warning){{else}}var(--ok){{end}};">{{.WarningCount}}</div>
+                    <div class="stat-label">Alerts</div>
+                </div>
+            </div>
+
             <div class="accounts-grid">
                 {{range .Accounts}}
                 <div class="account-card status-{{.LastCheckStatus}}">
                     <div class="account-header">
-                        <h3>{{.Name}} {{if .TelegramEnabled}}<span class="notify-icon" title="Telegram notifications enabled">🔔</span>{{else}}<span class="notify-icon off" title="Telegram notifications disabled">🔕</span>{{end}}</h3>
-                        <span class="status-badge">{{.LastCheckStatus}}</span>
+                        <h3>{{.Name}}</h3>
+                        <div class="status-indicator">
+                            <span class="status-dot {{.LastCheckStatus}}"></span>
+                            <span style="text-transform:capitalize;">{{.LastCheckStatus}}</span>
+                        </div>
                     </div>
                     
                     <div class="usage-info">
@@ -32,15 +50,15 @@
                             <div class="usage-bar" style="width: {{.PercentUsed}}%"></div>
                         </div>
                         <div class="usage-details">
-                            <span class="usage-text">
+                            <span>
                                 {{if gt .QuotaBytes 0}}
-                                {{printf "%.2f" .UsageGB}} GB / {{printf "%.2f" .QuotaGB}} GB
+                                {{printf "%.2f" .UsageGB}} / {{printf "%.2f" .QuotaGB}} GB
                                 {{else}}
                                 No quota set
                                 {{end}}
                             </span>
                             {{if gt .QuotaBytes 0}}
-                            <span class="percent-text">{{.PercentUsed}}% used</span>
+                            <span>{{.PercentUsed}}%</span>
                             {{end}}
                         </div>
                     </div>
@@ -50,16 +68,16 @@
                     {{end}}
 
                     <div class="account-meta">
-                        <span>Last check: {{if .FormattedLast}}{{.FormattedLast}}{{else}}Never{{end}}</span>
-                        <button onclick="triggerCheck({{.ID}})" class="btn-small">Refresh</button>
+                        <span>{{if .FormattedLast}}Checked {{.FormattedLast}}{{else}}Never checked{{end}}</span>
+                        {{if .TelegramEnabled}}<span style="color:var(--text-tertiary);">Notifications on</span>{{end}}
                     </div>
                 </div>
                 {{end}}
             </div>
             {{else}}
             <div class="empty-state">
-                <p>No accounts configured yet.</p>
-                <a href="/config" class="btn">Add Account</a>
+                <p>No accounts configured</p>
+                <a href="/config" class="btn">Add account</a>
             </div>
             {{end}}
         </main>
@@ -72,20 +90,6 @@
                 return JSON.parse(text);
             } catch {
                 return { success: false, error: text || ('HTTP ' + res.status + ' ' + res.statusText) };
-            }
-        }
-
-        async function triggerCheck(id) {
-            try {
-                const res = await fetch('/api/trigger/' + id, { method: 'POST' });
-                const data = await parseResponse(res);
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Failed to trigger check: ' + (data.error || 'Unknown error'));
-                }
-            } catch (err) {
-                alert('Failed to trigger check: ' + err);
             }
         }
         
