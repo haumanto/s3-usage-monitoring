@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S3 Accounts - S3 Usage Monitor</title>
+    <title>Accounts — S3 Monitor</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📊 S3 Usage Monitor</h1>
+            <div class="brand">S3 Monitor</div>
             <nav>
                 <a href="/">Dashboard</a>
                 <a href="/config" class="active">Accounts</a>
@@ -19,92 +19,85 @@
 
         <main>
             <section class="form-section">
-                <h2>Add / Edit Account</h2>
+                <h2 id="formTitle">Add account</h2>
                 <form id="accountForm">
                     <input type="hidden" id="accountId" name="id">
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="name">Account Name *</label>
-                            <input type="text" id="name" name="name" required placeholder="My AWS Account">
+                    <div class="form-group">
+                        <label for="name">Account name</label>
+                        <input type="text" id="name" name="name" required placeholder="Production AWS">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="access_key">Access key ID</label>
+                        <input type="text" id="access_key" name="access_key" required placeholder="AKIA...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="secret_key">Secret access key</label>
+                        <input type="password" id="secret_key" name="secret_key" required placeholder="••••••••">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="region">Region</label>
+                        <input type="text" id="region" name="region" value="us-east-1" placeholder="us-east-1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endpoint">Custom endpoint</label>
+                        <input type="text" id="endpoint" name="endpoint" placeholder="https://minio.example.com">
+                        <small>Optional. For S3-compatible services like MinIO or Wasabi.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bucket">Bucket</label>
+                        <input type="text" id="bucket" name="bucket" placeholder="my-bucket">
+                        <small>Leave empty to monitor all buckets in the account.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quota">Quota</label>
+                        <div class="input-with-select">
+                            <input type="number" id="quota" name="quota" step="0.1" value="10" min="0">
+                            <select id="quota_unit" name="quota_unit">
+                                <option value="GB" selected>GB</option>
+                                <option value="TB">TB</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="access_key">Access Key ID *</label>
-                            <input type="text" id="access_key" name="access_key" required placeholder="AKIA...">
-                        </div>
-                        <div class="form-group">
-                            <label for="secret_key">Secret Access Key *</label>
-                            <input type="password" id="secret_key" name="secret_key" required placeholder="••••••••">
-                        </div>
+                    <div class="form-group">
+                        <label for="threshold">Threshold</label>
+                        <input type="number" id="threshold" name="threshold" value="80" min="1" max="100">
+                        <small>Percentage at which to trigger a warning.</small>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="region">Region</label>
-                            <input type="text" id="region" name="region" value="us-east-1" placeholder="us-east-1">
-                        </div>
-                        <div class="form-group">
-                            <label for="endpoint">Custom Endpoint (optional)</label>
-                            <input type="text" id="endpoint" name="endpoint" placeholder="https://minio.example.com">
-                        </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="telegram_enabled" name="telegram_enabled">
+                            Enable Telegram notifications
+                        </label>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="bucket">Bucket (optional, leave empty for all)</label>
-                            <input type="text" id="bucket" name="bucket" placeholder="my-bucket">
-                        </div>
+                    <div class="form-group telegram-fields" style="display:none;">
+                        <label for="telegram_bot_token">Bot token</label>
+                        <input type="text" id="telegram_bot_token" name="telegram_bot_token" placeholder="123456:ABC...">
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="quota">Quota</label>
-                            <div class="input-with-select">
-                                <input type="number" id="quota" name="quota" step="0.1" value="10" min="0">
-                                <select id="quota_unit" name="quota_unit">
-                                    <option value="GB" selected>GB</option>
-                                    <option value="TB">TB</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="threshold">Threshold %</label>
-                            <input type="number" id="threshold" name="threshold" value="80" min="1" max="100">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group checkbox-group">
-                            <label>
-                                <input type="checkbox" id="telegram_enabled" name="telegram_enabled">
-                                Enable Telegram notifications for this account
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-row telegram-fields" style="display:none;">
-                        <div class="form-group">
-                            <label for="telegram_bot_token">Telegram Bot Token</label>
-                            <input type="text" id="telegram_bot_token" name="telegram_bot_token" placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11">
-                        </div>
-                        <div class="form-group">
-                            <label for="telegram_chat_id">Chat ID</label>
-                            <input type="text" id="telegram_chat_id" name="telegram_chat_id" placeholder="-1001234567890">
-                        </div>
+                    <div class="form-group telegram-fields" style="display:none;">
+                        <label for="telegram_chat_id">Chat ID</label>
+                        <input type="text" id="telegram_chat_id" name="telegram_chat_id" placeholder="-1001234567890">
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn" id="submitBtn">Add Account</button>
-                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancel</button>
+                        <button type="submit" class="btn" id="submitBtn">Add account</button>
+                        <button type="button" class="btn-text" onclick="resetForm()">Cancel</button>
                     </div>
                 </form>
             </section>
 
             <section class="accounts-list">
-                <h2>Configured Accounts</h2>
+                <h2>Configured accounts</h2>
                 <table id="accountsTable">
                     <thead>
                         <tr>
@@ -114,7 +107,7 @@
                             <th>Quota</th>
                             <th>Threshold</th>
                             <th>Telegram</th>
-                            <th>Actions</th>
+                            <th style="text-align:right;">Actions</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -123,14 +116,25 @@
         </main>
     </div>
 
+    <div id="toast" class="toast"></div>
+
     <script>
         const form = document.getElementById('accountForm');
         const telegramCheckbox = document.getElementById('telegram_enabled');
-        const telegramFields = document.querySelector('.telegram-fields');
+        const telegramFields = document.querySelectorAll('.telegram-fields');
+        const toast = document.getElementById('toast');
 
         telegramCheckbox.addEventListener('change', () => {
-            telegramFields.style.display = telegramCheckbox.checked ? 'flex' : 'none';
+            telegramFields.forEach(el => {
+                el.style.display = telegramCheckbox.checked ? 'block' : 'none';
+            });
         });
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
 
         async function parseResponse(res) {
             const text = await res.text();
@@ -170,7 +174,6 @@
             
             if (accountId) {
                 url = '/api/accounts/' + accountId;
-                method = 'POST';
             }
 
             try {
@@ -179,11 +182,12 @@
                 if (data.success) {
                     resetForm();
                     loadAccounts();
+                    showToast(accountId ? 'Account updated' : 'Account added');
                 } else {
-                    alert('Error: ' + (data.error || JSON.stringify(data)));
+                    showToast('Error: ' + (data.error || 'Unknown error'));
                 }
             } catch (err) {
-                alert('Request failed: ' + err);
+                showToast('Request failed: ' + err);
             }
         });
 
@@ -200,13 +204,15 @@
                     <tr>
                         <td>${a.name}</td>
                         <td>${a.region}</td>
-                        <td>${a.bucket || '(all)'}</td>
+                        <td>${a.bucket || 'All buckets'}</td>
                         <td>${formatBytes(a.quota_bytes)}</td>
                         <td>${a.threshold_percent}%</td>
-                        <td>${a.telegram_enabled ? '✓' : '✗'}</td>
+                        <td>${a.telegram_enabled ? 'On' : 'Off'}</td>
                         <td>
-                            <button onclick="editAccount(${a.id})" class="btn-small">Edit</button>
-                            <button onclick="deleteAccount(${a.id})" class="btn-small btn-danger">Delete</button>
+                            <div class="actions">
+                                <button onclick="editAccount(${a.id})" class="btn-small">Edit</button>
+                                <button onclick="deleteAccount(${a.id})" class="btn-small btn-danger">Delete</button>
+                            </div>
                         </td>
                     </tr>
                 `).join('');
@@ -219,7 +225,7 @@
             try {
                 const res = await fetch('/api/accounts/' + id);
                 if (!res.ok) {
-                    alert('Failed to load account: HTTP ' + res.status);
+                    showToast('Failed to load account');
                     return;
                 }
                 const a = await res.json();
@@ -237,12 +243,16 @@
                 document.getElementById('telegram_bot_token').value = a.telegram_bot_token || '';
                 document.getElementById('telegram_chat_id').value = a.telegram_chat_id || '';
                 
-                telegramFields.style.display = a.telegram_enabled ? 'flex' : 'none';
-                document.getElementById('submitBtn').textContent = 'Update Account';
+                telegramFields.forEach(el => {
+                    el.style.display = a.telegram_enabled ? 'block' : 'none';
+                });
+                
+                document.getElementById('formTitle').textContent = 'Edit account';
+                document.getElementById('submitBtn').textContent = 'Save changes';
                 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
-                alert('Failed to load account: ' + err);
+                showToast('Failed to load account');
             }
         }
 
@@ -253,19 +263,23 @@
                 const data = await parseResponse(res);
                 if (data.success) {
                     loadAccounts();
+                    showToast('Account deleted');
                 } else {
-                    alert('Failed to delete: ' + (data.error || 'Unknown error'));
+                    showToast('Failed to delete: ' + (data.error || 'Unknown error'));
                 }
             } catch (err) {
-                alert('Failed to delete: ' + err);
+                showToast('Failed to delete: ' + err);
             }
         }
 
         function resetForm() {
             form.reset();
             document.getElementById('accountId').value = '';
-            document.getElementById('submitBtn').textContent = 'Add Account';
-            telegramFields.style.display = 'none';
+            document.getElementById('formTitle').textContent = 'Add account';
+            document.getElementById('submitBtn').textContent = 'Add account';
+            telegramFields.forEach(el => {
+                el.style.display = 'none';
+            });
         }
 
         function formatBytes(bytes) {
